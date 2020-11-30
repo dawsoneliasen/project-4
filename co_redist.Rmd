@@ -1,0 +1,33 @@
+```{r}
+library(redist)  # redistricting sampling
+library(sf)  # shapefile handling
+library(spdep)  # shapefile calculations
+
+set.seed(400)
+```
+
+```{r}
+# read CO shapefile
+co_shp <- read_sf(dsn='co_precincts', layer='co_precincts')
+# make a quick plot
+ggplot(co_shp, aes(fill=POP100) + geom_sf(size=0)
+```
+
+```{r}
+# sort CO data by voter district
+co_shp$CD116FP <- as.integer(co_shp$CD116FP)
+co_shp <- co_shp %>% arrange(CD116FP)
+# calculate CO precinct adjacency list
+adjlist <- poly2nb(pl=co_shp, queen=FALSE)
+
+# run MCMC samples of redistricting
+m <- 1000  # ?
+# should we use mcmc, or mcmc.mpi?
+mcmc_out <- redist.mcmc(
+    adjobj=adjlist,
+    popvec=co_shp$TOTPOP, 
+    initcds=co_shp$CD116FP,
+    nsims=m,
+    savename='co_redist.mcmc'
+)
+```
