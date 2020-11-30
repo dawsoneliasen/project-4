@@ -2,6 +2,7 @@
 library(redist)  # redistricting sampling
 library(sf)  # shapefile handling
 library(spdep)  # shapefile calculations
+library(tidyverse)
 
 set.seed(400)
 ```
@@ -9,8 +10,13 @@ set.seed(400)
 ```{r}
 # read CO shapefile
 co_shp <- read_sf(dsn='co_precincts', layer='co_precincts')
+```
+
+```{r}
 # make a quick plot
-ggplot(co_shp, aes(fill=POP100) + geom_sf(size=0)
+ggplot(co_shp, aes(fill=CD116FP)) +
+    geom_sf(size=0) +
+    scale_fill_brewer(palette='Set2')
 ```
 
 ```{r}
@@ -21,7 +27,7 @@ co_shp <- co_shp %>% arrange(CD116FP)
 adjlist <- poly2nb(pl=co_shp, queen=FALSE)
 
 # run MCMC samples of redistricting
-m <- 1000  # ?
+m <- 100  # ?
 # should we use mcmc, or mcmc.mpi?
 mcmc_out <- redist.mcmc(
     adjobj=adjlist,
@@ -31,3 +37,13 @@ mcmc_out <- redist.mcmc(
     savename='co_redist.mcmc'
 )
 ```
+
+```{r}
+co_shp$CD116FP <- mcmc_out$partitions[,1]
+co_shp$CD116FP <- as.factor(co_shp$CD116FP)
+
+ggplot(co_shp, aes(fill=CD116FP)) +
+    geom_sf(size=0) +
+    scale_fill_brewer(palette='Set2')
+```
+
