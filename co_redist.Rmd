@@ -1,15 +1,25 @@
+---
+title: "Colorado Redistricting Sampling"
+author: "Dawson Eliasen"
+date: "12/1/2020"
+output: pdf_document
+---
+
 ```{r}
 library(redist)  # redistricting sampling
 library(sf)  # shapefile handling
 library(spdep)  # shapefile calculations
+library(plyr)
 library(tidyverse)
-
-set.seed(400)
 ```
 
 ```{r}
 # read CO shapefile
 co_shp <- read_sf(dsn='co_precincts', layer='co_precincts')
+# co_shp <- co_shp %>% subset((COUNTYFP == '031') |
+#                             (COUNTYFP == '001') |
+#                             (COUNTYFP == '005') |
+#                             (COUNTYFP == '059'))
 ```
 
 ```{r}
@@ -23,23 +33,56 @@ ggplot(co_shp, aes(fill=CD116FP)) +
 # sort CO data by voter district
 co_shp$CD116FP <- as.integer(co_shp$CD116FP)
 co_shp <- co_shp %>% arrange(CD116FP)
+# coerce increasing sequence of district IDs
+from <- unique(co_shp$CD116FP)
+to <- seq_len(length(unique(co_shp$CD116FP)))
+co_shp$CD116FP <- co_shp$CD116FP %>% mapvalues(from, to)
 # calculate CO precinct adjacency list
 adjlist <- poly2nb(pl=co_shp, queen=FALSE)
-
+# distance <- st_distance(co_shp)
 # run MCMC samples of redistricting
-m <- 100  # ?
+```
+
+```{r}
+m <- 100000
 # should we use mcmc, or mcmc.mpi?
-mcmc_out <- redist.mcmc(
+set.seed(1)
+mcmc_out1 <- redist.mcmc(
     adjobj=adjlist,
     popvec=co_shp$TOTPOP, 
     initcds=co_shp$CD116FP,
     nsims=m,
-    savename='co_redist.mcmc'
+    savename='co_redist_mcmc1'
+    # constraint=c('compact'),
+    # constraintweights=c(1),
+    # ssdmat=distance
+)
+set.seed(2)
+mcmc_out2 <- redist.mcmc(
+    adjobj=adjlist,
+    popvec=co_shp$TOTPOP, 
+    initcds=co_shp$CD116FP,
+    nsims=m,
+    savename='co_redist_mcmc2'
+    # constraint=c('compact'),
+    # constraintweights=c(1),
+    # ssdmat=distance
+)
+set.seed(3)
+mcmc_out3 <- redist.mcmc(
+    adjobj=adjlist,
+    popvec=co_shp$TOTPOP, 
+    initcds=co_shp$CD116FP,
+    nsims=m,
+    savename='co_redist_mcmc3'
+    # constraint=c('compact'),
+    # constraintweights=c(1),
+    # ssdmat=distance
 )
 ```
 
 ```{r}
-co_shp$CD116FP <- mcmc_out$partitions[,1]
+co_shp$CD116FP <- mcmc_out1$partitions[,100]
 co_shp$CD116FP <- as.factor(co_shp$CD116FP)
 
 ggplot(co_shp, aes(fill=CD116FP)) +
