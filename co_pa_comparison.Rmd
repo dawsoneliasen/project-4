@@ -20,7 +20,12 @@ library(RColorBrewer)
 
 ## Introduction 
 
-  Fair elections are a integral part of democracy for without it, the will of the people might not be respected and if that happens we no longer have a democracy. However, despite the huge importance of the elections in the US, there are still ways that a party can negatively impact the election by gaining an unfair advantage. One of the ways that this can happen, is gerrymandering where in order to gain a political advantage in a state by manipulating district boundaries.
+  Fair elections are a integral part of democracy for without it, the will of the people might not be respected and if that happens we no longer have a democracy. However, despite the huge importance of the elections in the US, there are still ways that a party can negatively impact the election by gaining an unfair advantage. One of the ways that this can happen, is gerrymandering where in order to gain a political advantage in a state by manipulating district boundaries. This issues has come before the supreme court, however it was ruled that it was up to the congress and the states to deal with it.
+  
+  Due to the scale of this issue, the paper by Fifield et al, proposes the use of a Markov Chain Monte Carlo method to automate the redistricting process, despite having a few Monte Carlo algorithms existing none of them have strong theoretical background. Fifield et al algorithm proposes to solve the automation redistricting by formulating it as a Graph Cut problem, where the MCMC samples the districts plans from arbitrary distributions over the set of n contiguous districts, they also implemented equal population constraint, which is a main requirement in the real-world problem. 
+
+
+  
 
 
 
