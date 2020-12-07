@@ -107,113 +107,14 @@ plot_sim_bias <- function(xax, storebias, range=0.1) {
         cex.main=1.6,
         col=colrep
      )
-    # axis(1, seq(0, 0.1, by=0.01), c('0%', '1%', '2%', '3%', '4%', '5%', '6%', '7%', '8%', '9%', '10%'), cex.axis=1.7)
+    axis(
+      1,
+      seq(0, max(x), by=0.05),
+      as.character(seq(0, max(x), by=0.05)),
+      cex.axis=1.7
+    )
     abline(h=(1 - -1) * (storebias[1] - bias_min) / (bias_max - bias_min) + -1)
     abline(h=0, col='red', lty='dashed')
-}
-
-
-plot_swap_summary <- function(map, algout, storebias, xax, mindev=0.02875, maxdev=0.03125, dist=3) {
-    ind <- which(storebias == min(storebias[xax < maxdev & xax > mindev]))[1]
-    orig_map <- algout[,1] + 1
-    min_map <- algout[,ind] + 1
-    unchanged <- orig_map == min_map
-    subset <- orig_map == 1 | min_map == 1
-    col <- ifelse(orig_map[subset] == min_map[subset], 'white',
-                  ifelse(orig_map[subset] == 1, 'blue', 'red'))
-    
-    dist_idx <- orig_map == dist | min_map == dist
-    dist_col <- ifelse(orig_map[dist_idx] == min_map[dist_idx], 'white',
-                       ifelse(orig_map[dist_idx] == dist, 'blue', 'red'))
-    
-    
-    par(mfrow=c(2,2), mar=c(5.1, 4.3, 3.1, 0.2))
-    # CD 1
-    plot(
-        density(
-            na.omit(
-                dem_voteshare[subset & orig_map[subset] == min_map[subset]]
-            ), from=0, to=1
-        ),
-        xlim=c(0, 1),
-        xlab='Vote Share for Democratic Congressional Candidate',
-        lwd=2,
-        main='Distribution of Democratic Voteshare for District 1',
-        cex.lab=1.6,
-        cex.axis=1.7,
-        cex.main=1.6
-    )
-    lines(
-        density(
-            na.omit(
-                dem_voteshare[subset & orig_map[subset] == 1 & min_map[subset] != 1]
-            ), from=0, to=1
-        ), col='blue',
-        lwd=2,
-        lty='dashed'
-    )
-    lines(
-        density(
-            na.omit(
-                em_voteshare[subset & orig_map[subset] != 1 & min_map[subset] == 1]
-            ), from=0, to=1
-        ), col='red',
-        lwd=2,
-        lty='dotdash'
-    )
-    legend('topleft', col=c('black', 'blue', 'red'),
-           lwd=2, legend=c('Not Swapped', 'Swapped Out', 'Swapped In'),
-           lty=c(1, 2, 6),
-           bty='n', cex=1.6)
-    plot(mapsub_1, col=mapsub$col, lwd=1,
-         main='Congressional District 1',
-        cex.lab=1.6,
-        cex.axis=1.7,
-        cex.main=1.6)
-    legend('topleft', col=c('black', 'blue', 'red'),
-           pt.bg=c('white', 'blue', 'red'),
-           pch=22,
-           legend=c('Not Swapped', 'Swapped Out', 'Swapped In'),
-           bty='n', cex=1.6)
-    # CD 11
-    plot(
-        density(
-            na.omit(
-                mapsub_dist$dem_voteshare[mapsub_dist$orig_map == mapsub_dist$min_map]
-            ), from=0, to=1
-        ),
-        ylim=c(0,6),
-        xlim=c(0, 1),
-        xlab='Vote Share for Democratic Congressional Candidate',
-        lwd=2,
-        main='Distribution of Democratic Voteshare for District 3',
-        cex.lab=1.6,
-        cex.axis=1.6,
-        cex.main=1.6
-    )
-    lines(
-        density(
-            na.omit(
-                mapsub_dist$dem_voteshare[mapsub_dist$orig_map == dist & mapsub_dist$min_map != dist]
-            ), from=0, to=1
-        ), col='blue',
-        lwd=2,
-        lty='dashed'
-    )
-    lines(
-        density(
-            na.omit(
-                mapsub_dist$dem_voteshare[mapsub_dist$orig_map != dist & mapsub_dist$min_map == dist]
-            ), from=0, to=1
-        ), col='red',
-        lwd=2,
-        lty='dotdash'
-    )
-    plot(mapsub_dist, col=mapsub_dist$col, lwd=1,
-         main='Congressional District 3',
-        cex.lab=1.5,
-        cex.axis=1.7,
-        cex.main=1.6)
 }
 ```
 
@@ -253,6 +154,10 @@ xax <- 1 - c(co_sim1$distance_original[!is.na(co_sim1_seg)],
 co_sim_bias <- calc_sim_bias(co_sim, co$GOV18D, co$GOV18R)
 plot_sim_bias(xax, co_sim_bias)
 ```
+```{r}
+dev.print(png, 'figures/bias.png')
+```
+
 
 ```{r}
 plot_min_bias(co_sim, co_sim_bias, co, xax)
