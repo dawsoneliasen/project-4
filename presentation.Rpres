@@ -19,7 +19,7 @@ Redistricting problem representation
 - Since districts are formed by “cutting” edges, we can think of redistricting as a “graph cut” problem
 
 
-Monte Caro Markov Chain (MCMC)
+Monte Carlo Markov Chain (MCMC)
 ========================================================
 The Metropolis-Hastings algorithm is used to simulate redistricting plans.
 - Define a function $f(x)$, proportional to the pdf of the desired distribution
@@ -27,7 +27,7 @@ The Metropolis-Hastings algorithm is used to simulate redistricting plans.
 - Start with a valid sample, $x_0$
 - At each iteration:
     - Generate a “candidate” sample $x^*$ from $g$ (perturb $x_i$)
-    - Accept $x^*$ with probability equal to $\frac{f(x^*)}{f(x_i}}$
+    - Accept $x^*$ with probability equal to $\frac{f(x^*)}{f(x_i)}$
 
 
 MCMC Example
@@ -65,10 +65,47 @@ Results
 Starting map (current districts)
 ========================================================
 ```{r, echo=FALSE}
-ggplot(co_shp, aes(fill=CD116FP)) +
+library(tidyverse)
+library(plyr)
+library(sf)
+library(RColorBrewer)
+source('plotting_functions.R')
+
+co <- read_sf(dsn='co_precincts', layer='co_precincts')
+co <- co %>% arrange(CD116FP)
+from <- unique(co$CD116FP)
+to <- seq_len(length(unique(co$CD116FP)))
+co$CD116FP <- co$CD116FP %>% mapvalues(from, to)
+
+ggplot(co, aes(fill=CD116FP)) +
     geom_sf(size=0) +
     scale_fill_brewer(palette='Set2')
 ```
+
+MCMC Summary
+========================================================
+```{r, echo=FALSE}
+loadRData <- function(f) {
+    load(f)
+    get(ls()[ls() != 'f'])
+}
+
+co_sim1 <- loadRData('co_redist_mcmc1.RData')
+co_sim2 <- loadRData('co_redist_mcmc2.RData')
+co_sim3 <- loadRData('co_redist_mcmc3.RData')
+co_sim1_seg <- redist.segcalc(co_sim1, co$USH18R, co$TOTPOP)
+co_sim2_seg <- redist.segcalc(co_sim2, co$USH18R, co$TOTPOP)
+co_sim3_seg <- redist.segcalc(co_sim3, co$USH18R, co$TOTPOP)
+co_sim <- cbind(co_sim1$partitions[,!is.na(co_sim1_seg)],
+                co_sim2$partitions[,!is.na(co_sim2_seg)], 
+                co_sim3$partitions[,!is.na(co_sim3_seg)])
+xax <- 1 - c(co_sim1$distance_original[!is.na(co_sim1_seg)],
+             co_sim2$distance_original[!is.na(co_sim2_seg)],
+             co_sim3$distance_original[!is.na(co_sim3_seg)])
+co_sim_bias <- calc_sim_bias(co_sim, co$GOV18D, co$GOV18R)
+plot_sim_bias(xax, co_sim_bias)
+```
+
 
 Minimum bias map
 ========================================================
