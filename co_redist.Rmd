@@ -27,6 +27,7 @@ co_shp <- read_sf(dsn='co_precincts', layer='co_precincts')
 ggplot(co_shp, aes(fill=CD116FP)) +
     geom_sf(size=0) +
     scale_fill_brewer(palette='Set2')
+ggsave('figures/co.png')
 ```
 
 ```{r}
@@ -44,7 +45,7 @@ adjlist <- poly2nb(pl=co_shp, queen=FALSE)
 ```
 
 ```{r}
-m <- 100000
+m <- 10000
 # should we use mcmc, or mcmc.mpi?
 set.seed(1)
 mcmc_out1 <- redist.mcmc(
