@@ -25,6 +25,20 @@ Gerrymandering
     - After this the case was brought to the supreme court, where it was ruled that     the supreme court could not address gerrymandering, which leaves to the            congress and states to deal with it.
 
 
+Automated Redistricting
+========================================================
+- Researchers have been trying to create a redistricting algorithm since the 1970s
+- It began as a optimization problem, where the goal is trying to find the optimal redistricting plan.
+- Due to the geographical dependence of redistricting in a state, it is essential to determine the distribution of redistricting plans under the redistricting criteria.
+- Simulation Methods are more appropriate since it allows scholars to answer these questions,by  simulating different plans outcomes under different constraints.
+- Yet only a few exist so far, using the same Monte Carlo simulation algorithm.
+
+Markov Chain Monte Carlo Redistricting
+========================================
+
+
+
+=========
 
 Methodology
 ========================================================
