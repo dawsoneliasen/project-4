@@ -3,8 +3,28 @@ MCMC Redistricting
 author: Dawson Eliasen, Jonathan Olavarria, Henrique Rio
 autosize: true
 
-Motivation
+What is Redistricting?
 ========================================================
+- Def: In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (wikipedia)
+
+
+- Redistricting Criteria:
+    - compactness
+    - contiguity
+    - equal population
+    - preservation of existing political communities
+    - partisan fairness
+    - racial fairness
+    
+
+Gerrymandering
+========================================================
+- What is Gerrymandering?
+    - Is the act of actively redrawing district lines so that it tilts as many districts as possible in favor of a party, in order for a party to cement themselves in power.
+    - Eg. A controversial redistricting that happened in texas in 2003, where          republicans went from 15 seats in 2002 to 21 in 2004 (democrats got 11).
+    - After this the case was brought to the supreme court, where it was ruled that     the supreme court could not address gerrymandering, which leaves to the            congress and states to deal with it.
+
+
 
 Methodology
 ========================================================
