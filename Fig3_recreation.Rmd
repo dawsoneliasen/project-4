@@ -1,0 +1,46 @@
+---
+title: "fig3"
+author: "Jonathan Olavarria"
+date: "12/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+```{r}
+co_sim1 <- loadRData('co_redist_mcmc1.RData')
+co_sim2 <- loadRData('co_redist_mcmc2.RData')
+co_sim3 <- loadRData('co_redist_mcmc3.RData')
+# TODO: are these the correct columns to use from Colorado data?
+co_sim1_seg <- redist.segcalc(co_sim1, co$USH18R, co$TOTPOP)
+co_sim2_seg <- redist.segcalc(co_sim2, co$USH18R, co$TOTPOP)
+co_sim3_seg <- redist.segcalc(co_sim3, co$USH18R, co$TOTPOP)
+
+rep.seg.mcmc <- data.frame(co_sim1_seg)
+names(rep.seg.mcmc) <- "dissim"
+nopop <- vector(mode = "list")
+nopop$sim.hard <- rep.seg.mcmc
+```
+
+
+```{r, include = TRUE}
+xlim <- c(0.1, max(nopop$sim.hard$dissim) + .01)
+ylim <- c(0, max(density(nopop$sim.hard$dissim)$y))
+
+## No constraint
+plot(density(nopop$sim.hard$dissim),
+     xlab = "Republican Dissimilarity Index",
+     main = "",
+     xlim = xlim,
+     ylim = ylim,
+     cex.lab = 1.6,
+     cex.axis = 1.7)
+polygon(density(nopop$sim.hard$dissim), col = "grey", border = "grey")
+
+
+```
+
