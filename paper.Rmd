@@ -1,0 +1,146 @@
+---
+title: "MCMC Redistricting"
+author: "Dawson Eliasen, Jonathan Olavarria, Henrique Rio"
+date: "12/11/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+```
+
+# Motivation
+
+
+## What is Redistricting?
+- Def: In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (Wikipedia)
+
+- Redistricting criteria:
+    - compactness
+    - contiguity
+    - equal population
+    - preservation of existing political communities
+    - partisan fairness
+    - racial fairness
+
+
+## Gerrymandering
+- What is Gerrymandering?
+    - Is the act of actively redrawing district lines so that it tilts as many districts as possible in favor of a party, in order for a party to cement themselves in power.
+    - e.g. A controversial redistricting that happened in Texas in 2003, where          republicans went from 15 seats in 2002 to 21 in 2004 (democrats got 11).
+    - After this the case was brought to the supreme court, where it was ruled that the supreme court could not address gerrymandering, which leaves to congress and states to deal with it.
+
+
+## Automated Redistricting
+- Researchers have been trying to create a redistricting algorithm since the 1970s
+- It began as a optimization problem, where the goal is trying to find the optimal redistricting plan.
+- Due to the geographical dependence of redistricting in a state, it is essential to determine the distribution of redistricting plans under the redistricting criteria.
+- Simulation Methods are more appropriate since it allows scholars to answer these questions,by  simulating different plans outcomes under different constraints.
+- Yet only a few exist so far, using the same Monte Carlo simulation algorithm.
+- We chose to reproduce a paper by Fifield from Harvard et. al., *Automated Redistricting Simulation Using Markov Chain Monte Carlo*
+
+
+# Methodology
+
+
+## Redistricting Problem Representation
+Redistricting is represented as a “graph cut” problem, where a state is represented as a graph $G$, and each voting precinct $i$ is a node in the set of nodes $V$. There is an undirected edge $i \sim j$ connecting nodes $i, j$ if the precincts $i, j$ are contiguous (share a border). Then, we get voter districts by partitioning the set of nodes $V$. This leaves subgraphs that represent the congressional districts. Since districts are formed by “cutting” edges, we can think of redistricting as a “graph cut” problem. This is how the MCMC methods generate new samples of redistricting plans.
+
+
+## Metropolis-Hastings
+The Metropolis-Hastings algorithm is a Monte Carlo Markov Chain algorithm based on the simple accept-reject algorithm, used to simulate redistricting plans.
+
+- Define a function $f(x)$, proportional to the pdf of the desired distribution
+- Define a proposal distribution $g(x | y)$ that provides a new sample $x$ given the previous sample $y$
+- Start with a valid sample, $x_0$
+- At each iteration:
+    - Generate a “candidate” sample $x^*$ from $g$ (perturb $x_i$)
+    - Accept $x^*$ with probability equal to $\frac{f(x^*)}{f(x_i)}$
+
+
+## Metropolis-Hastings Iteration Example
+To simulate redistricting, “perturbation” looks like swapping precincts along existing district borders. \ref{fig:MCMC example} illustrates the perturbation process for an example sample in a Metropolis-Hastings chain. Perturbation works by identifying nodes that exist on congressional district borders and proposing swaps along the borders. This produces a perturbation of the previous sample which is accepted with acceptance ratio
+
+$$
+\alpha(\pi', \mathbf{CP} | \pi) = \min \Big(1,
+    \Big(\frac{|B(\mathbf{CP}, \pi)|}{|B(\mathbf{CP}, \pi'|}\Big)^R 
+    \frac{F(|B(\mathbf{CP}, \pi)|)(1- q)^{C(\pi', \mathbf{V_{CP}})}}{F(|B(\mathbf{CP}, \pi')|) (1- q)^{C(\pi, \mathbf{V_{CP}})}} \cdot
+    \frac{g(\pi')}{g(\pi)} 
+\Big)
+$$
+
+where $\pi$ is the current sample, $\pi'$ is the perturbed sample, $\mathbf{CP}$ is the set of connected components formed by $\pi$, and $C$ is a graph-cut function.
+
+![MCMC example](figures/mcmc_example.png)
+
+
+## `redist` Package
+Fifield et. al. use a package called `redist` which implements this Metropolis-Hastings algorithm for simulating redistricting. `redist.mcmc` is a function for generating redistricting samples, and requires precinct adjacency matrix, population data, and assignments to a valid set of congressional districts as function inputs. The authors of the paper shared some code for reproduction, but the code was limited to generating figures and it was not generalizable to different data, so we re-implemented the simulation code to generate redistricting simulations for the state of Colorado.
+
+
+## Data
+Fifield et. al. use Pennsylvania shapefiles and election data from the Harvard Election Archive. However, the Harvard Election Archive Colorado dataset did not include congressional district assignments. Instead, we used a shapefile assembled by MGGG which was constructed from election data from Colorado Secretary of State’s Office, 2010 Census data from the U.S. Census Bureau Data API, and precinct borders from U.S. Census Bureau TIGER/Line shapefile repository.
+
+
+## Simulation
+Using the `sf` package, we read the Colorado shapefiles and calculated a precinct adjacency matrix with a package called `spdep`. Then, we used `redist.mcmc` to generate 3 MCMC chains of 10,000 samples each - this took a few hours. We initially tried 3 MCMC chains of 100,000 samples (this is what the authors of the paper do) - but this took to long and required more computing power than was available. We also tried applying a “compactness” constraint, but it requires providing a distance matrix of the nodes in the graph, which took too long to compute. Finally, we evaluate bias in the simulations using `redist.segcalc` and a modified version of the code shared by the authors of the paper.
+
+
+# Results
+
+
+## Starting Map (current districts)
+```{r, include=FALSE}
+library(tidyverse)
+library(plyr)
+library(sf)
+library(RColorBrewer)
+source('plotting_functions.R')
+```
+
+```{r, echo=FALSE, fig.cap="Current congressional districts in Colorado.\\label{fig:map}"}
+co <- read_sf(dsn='co_precincts', layer='co_precincts')
+co <- co %>% arrange(CD116FP)
+from <- unique(co$CD116FP)
+to <- seq_len(length(unique(co$CD116FP)))
+co$CD116FP <- co$CD116FP %>% mapvalues(from, to)
+
+ggplot(co, aes(fill=CD116FP)) +
+    geom_sf(size=0) +
+    scale_fill_brewer(palette='Set2')
+```
+
+
+## MCMC Summary
+```{r, include=FALSE}
+loadRData <- function(f) {
+    load(f)
+    get(ls()[ls() != 'f'])
+}
+```
+
+```{r, include=FALSE}
+co_sim1 <- loadRData('co_redist_mcmc1.RData')
+co_sim2 <- loadRData('co_redist_mcmc2.RData')
+co_sim3 <- loadRData('co_redist_mcmc3.RData')
+co_sim1_seg <- redist.segcalc(co_sim1, co$USH18R, co$TOTPOP)
+co_sim2_seg <- redist.segcalc(co_sim2, co$USH18R, co$TOTPOP)
+co_sim3_seg <- redist.segcalc(co_sim3, co$USH18R, co$TOTPOP)
+co_sim <- cbind(co_sim1$partitions[,!is.na(co_sim1_seg)],
+                co_sim2$partitions[,!is.na(co_sim2_seg)], 
+                co_sim3$partitions[,!is.na(co_sim3_seg)])
+xax <- 1 - c(co_sim1$distance_original[!is.na(co_sim1_seg)],
+             co_sim2$distance_original[!is.na(co_sim2_seg)],
+             co_sim3$distance_original[!is.na(co_sim3_seg)])
+co_sim_bias <- calc_sim_bias(co_sim, co$GOV18D, co$GOV18R)
+```
+
+```{r, echo=FALSE, fig.cap="Redistricting samples, percent of precincts changed vs. bias.\\label{fig:mcmc-summary}"}
+plot_sim_bias(xax, co_sim_bias)
+```
+
+
+## Minimum Bias Map
+```{r, echo=FALSE, fig.cap="Redistricting sample with minimum bias.\\label{fig:min-bias-map}"}
+plot_min_bias(co_sim, co_sim_bias, co, xax)
+```
