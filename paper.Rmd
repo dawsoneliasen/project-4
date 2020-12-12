@@ -12,16 +12,25 @@ knitr::opts_chunk$set(echo=FALSE)
 # Motivation
 
 
-## What is Redistricting?
-- Def: In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (Wikipedia)
+## Introduction 
 
-- Redistricting criteria:
+  Fair elections are a integral part of democracy for without it, the will of the people might not be respected and if that happens we no longer have a democracy. However, despite the huge importance of the elections in the US, there are still ways that a party can negatively impact the election by gaining an unfair advantage. One of the ways that this can happen, is gerrymandering where in order to gain a political advantage in a state by manipulating district boundaries. This issues has come before the supreme court, however it was ruled that it was up to the congress and the states to deal with it.
+  
+  Due to the scale of this issue, the paper by Fifield et al, proposes the use of a Markov Chain Monte Carlo method to automate the redistricting process, despite having a few Monte Carlo algorithms existing none of them have strong theoretical background. Fifield et al algorithm proposes to solve the automation redistricting by formulating it as a Graph Cut problem, where the MCMC samples the districts plans from arbitrary distributions over the set of n contiguous districts, they also implemented equal population constraint, which is a main requirement in the real-world problem.
+
+
+## What is Redistricting?
+ "In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (Wikipedia). Redistricting also has to follow 6 different criteria, which are as follows.
+
+Redistricting criteria:
     - compactness
     - contiguity
     - equal population
     - preservation of existing political communities
     - partisan fairness
     - racial fairness
+  The compact criteria pertains to the size of each district where one district cannot be of a enormous size and another one be really small, they all have to be more or less similar in size. The contiguity constraint, stipulates that all that all of the district have to be continuous in area in the sense that one district cannot cut through the middle of the other one. The equal population constraint, e
+
 
 
 ## Gerrymandering
