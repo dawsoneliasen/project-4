@@ -2,7 +2,10 @@
 title: "MCMC Redistricting"
 author: "Dawson Eliasen, Jonathan Olavarria, Henrique Rio"
 date: "12/11/2020"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -80,7 +83,7 @@ $$
 
 where $\pi$ is the current sample, $\pi'$ is the perturbed sample, $\mathbf{CP}$ is the set of connected components formed by $\pi$, and $C$ is a graph-cut function.
 
-![MCMC example](figures/mcmc_example.png)
+
 
 
 ## `redist` Package
@@ -107,6 +110,9 @@ library(RColorBrewer)
 source('plotting_functions.R')
 ```
 
+
+
+
 ```{r, echo=FALSE, fig.cap="Current congressional districts in Colorado.\\label{fig:map}"}
 co <- read_sf(dsn='co_precincts', layer='co_precincts')
 co <- co %>% arrange(CD116FP)
@@ -120,7 +126,20 @@ ggplot(co, aes(fill=CD116FP)) +
 ```
 
 
+
+
+In figure 1 above we see the current district map for the state of colorado. The districts are distinguished by the different colors and the legend on the right. The opaque white lines show the precinct lines (there are over 3000 precincts in the state of Colorado), as mentioned in the intorduction gerrymandering is the process of moving precincts from one district to another to sway political bias in certain districts or in an entire state. Each district shown above satisfies the equal population constraint stating that every district must have approximately the same population. At the moment politicians are doing this process by hand looking at each precinct's voting history and moving them around to benefit their political party. Redistricting happens once every 10 years after every census. The current district layout exhibits democratic bias which is as expected because democrats controlled the state legislature in 2010 which was a census year.
+
+
+
+
+
+
+
 ## MCMC Summary
+
+
+
 ```{r, include=FALSE}
 loadRData <- function(f) {
     load(f)
@@ -147,6 +166,19 @@ co_sim_bias <- calc_sim_bias(co_sim, co$GOV18D, co$GOV18R)
 ```{r, echo=FALSE, fig.cap="Redistricting samples, percent of precincts changed vs. bias.\\label{fig:mcmc-summary}"}
 plot_sim_bias(xax, co_sim_bias)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Minimum Bias Map
