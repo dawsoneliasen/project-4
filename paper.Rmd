@@ -84,6 +84,7 @@ $$
 where $\pi$ is the current sample, $\pi'$ is the perturbed sample, $\mathbf{CP}$ is the set of connected components formed by $\pi$, and $C$ is a graph-cut function.
 
 
+![MCMC example](figures/mcmc_example.png)
 
 
 ## `redist` Package
@@ -128,11 +129,7 @@ ggplot(co, aes(fill=CD116FP)) +
 
 
 
-In figure 1 above we see the current district map for the state of colorado. The districts are distinguished by the different colors and the legend on the right. The opaque white lines show the precinct lines (there are over 3000 precincts in the state of Colorado), as mentioned in the intorduction gerrymandering is the process of moving precincts from one district to another to sway political bias in certain districts or in an entire state. Each district shown above satisfies the equal population constraint stating that every district must have approximately the same population. At the moment politicians are doing this process by hand looking at each precinct's voting history and moving them around to benefit their political party. Redistricting happens once every 10 years after every census. The current district layout exhibits democratic bias which is as expected because democrats controlled the state legislature in 2010 which was a census year.
-
-
-
-
+In figure 1 above we see the current district map for the state of colorado. The districts are distinguished by the different colors and the legend on the right. The opaque white lines show the precinct lines (there are over 3000 precincts in the state of Colorado), as mentioned in the intorduction gerrymandering is the process of moving precincts from one district to another to sway political bias in certain districts or in an entire state. Each district shown above satisfies the equal population constraint stating that every district must have approximately the same population. At the moment politicians are doing this process by hand looking at each precinct's voting history and moving them around to benefit their political party. Redistricting happens once every 10 years after every census. The current district layout exhibits democratic bias which is as expected because democrats controlled the state legislature in 2010 which was the last census year.
 
 
 
@@ -168,16 +165,9 @@ plot_sim_bias(xax, co_sim_bias)
 ```
 
 
+Now we can look at the bias asscoiated with our simulations. Our simulation consisted of 10,000 different and unique redistricting maps that the algorithm computed using our parameters and equal population constraints. For voting data we fed the algorithm the results for the goverenors election. Each point on the graph is a distinct Colorado district map. On X-axis we have the percentage of precincts swapped for a particular simulation. On the Y axis we have our calculated political bias. The red dotted line shows 0 bias, above that line is democratic bias and below that line is republican bias. The black line shows the current political bias which is slightly democratic.
 
-
-
-
-
-
-
-
-
-
+There seems to be a connection between political bias and percentage of precincts swapped. When less than 10 percent of precincts are swapped the political bias changes very little and stays democratic but it can sway slightly closer to the ideal 0 bias line. However as more precincts get swapped we start to see a positive trend in the graph where partisan bias grows more and more in favor of democrats. According to our simulations in order to acheive 0 bias approximately 37 percent of precincts need to be swapped from their original district. The political bias can even become slightly republican with this proportion of precincts swapped. However, the over all trend is that the vast meajority of the simulations that were run return a district map of colorado that is even more democratically biased than it currently is. This could be due to the fact that Colorado has been trending away from being a swing state and becoming more of a solid "blue" state over the past 20 or so years.
 
 
 
