@@ -17,13 +17,13 @@ knitr::opts_chunk$set(echo=FALSE)
 
 ## Introduction 
 
-  Fair elections are a integral part of democracy for without it, the will of the people might not be respected and if that happens we no longer have a democracy. However, despite the huge importance of the elections in the US, there are still ways that a party can negatively impact the election by gaining an unfair advantage. One of the ways that this can happen, is gerrymandering where in order to gain a political advantage in a state by manipulating district boundaries. This issues has come before the supreme court, however it was ruled that it was up to the congress and the states to deal with it.
+  Fair elections are an integral part of democracy for, without it, the will of the people might not be respected and if that happens we no longer have a democracy. However, despite the huge importance of the elections in the US, there are still ways that a party can negatively impact the election by gaining an unfair advantage. One of the ways that this can happen, is gerrymandering were to gain a political advantage in a state by manipulating district boundaries. This issue has come before the supreme court, however, it was ruled that it was up to Congress and the states to deal with it.
   
-  Due to the scale of this issue, the paper by Fifield et al, proposes the use of a Markov Chain Monte Carlo method to automate the redistricting process, despite having a few Monte Carlo algorithms existing none of them have strong theoretical background. Fifield et al algorithm proposes to solve the automation redistricting by formulating it as a Graph Cut problem, where the MCMC samples the districts plans from arbitrary distributions over the set of n contiguous districts, they also implemented equal population constraint, which is a main requirement in the real-world problem.
+  Due to the scale of this issue, the paper by Fifield et al, proposes the use of a Markov Chain Monte Carlo method to automate the redistricting process, despite having a few Monte Carlo algorithms existing none of them have a strong theoretical background. Fifield et al algorithm proposes to solve the automation redistricting by formulating it as a Graph Cut problem, where the MCMC samples the districts plans from arbitrary distributions over the set of n contiguous districts, they also implemented equal population constraint, which is a main requirement in the real-world problem.
 
 
 ## What is Redistricting?
- "In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (Wikipedia). Redistricting also has to follow 6 different criteria, which are as follows.
+ "In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (Wikipedia). Redistricting also has to follow 6 different criteria, which are as follows. 
 
 Redistricting criteria:
     - compactness
@@ -32,24 +32,30 @@ Redistricting criteria:
     - preservation of existing political communities
     - partisan fairness
     - racial fairness
-  The compact criteria pertains to the size of each district where one district cannot be of a enormous size and another one be really small, they all have to be more or less similar in size. The contiguity constraint, stipulates that all that all of the district have to be continuous in area in the sense that one district cannot cut through the middle of the other one. The equal population constraint, e
+ 
+  The compact criteria pertain to the size of each district where one district cannot be of enormous size and another one be really small, they all have to be more or less similar in size. The contiguity constraint stipulates that all of the districts have to be continuous in an area in the sense that one district cannot cut through the middle of the other one. The equal population constraint determines that the districts must divide the population of the state equally, which may seem simple at first, however, the implementation of this is quite complicated when the precinct's population are factored in since you have to account for each precinct population. 
 
 
 
 ## Gerrymandering
-- What is Gerrymandering?
-    - Is the act of actively redrawing district lines so that it tilts as many districts as possible in favor of a party, in order for a party to cement themselves in power.
-    - e.g. A controversial redistricting that happened in Texas in 2003, where          republicans went from 15 seats in 2002 to 21 in 2004 (democrats got 11).
-    - After this the case was brought to the supreme court, where it was ruled that the supreme court could not address gerrymandering, which leaves to congress and states to deal with it.
+
+  Gerrymandering Is the act of actively redrawing district lines so that it tilts as many districts as possible in favor of a party, for a party to cement themselves in power. The redistricting process happens every ten years, right after the U.S. census, in order to update the districts to the changes in the demographic. However, some parties use this opportunity to further cement their power in the state either by dividing the districts where the opposing party has more support to decrease their strength in said district or by adding other precincts district that is dominated by the opposition to increase their power. 
+  
+  One example extreme example of gerrymandering is in Texas in 2003, where, Republicans who had 15 seats in 2002, went to 21 seats in 2004 and Democrats only got 14 seats in 2004. This is a Bipartisan issue, and due to that it was later brought to the supreme court in the *"Rucho vs Common Cause"* case, However, it was decided that it was not a supreme court issue, and therefore, it must be dealt by the congress and the state officials to address it, and regulate it.
+    
+    
+
 
 
 ## Automated Redistricting
-- Researchers have been trying to create a redistricting algorithm since the 1970s
-- It began as a optimization problem, where the goal is trying to find the optimal redistricting plan.
-- Due to the geographical dependence of redistricting in a state, it is essential to determine the distribution of redistricting plans under the redistricting criteria.
-- Simulation Methods are more appropriate since it allows scholars to answer these questions,by  simulating different plans outcomes under different constraints.
-- Yet only a few exist so far, using the same Monte Carlo simulation algorithm.
-- We chose to reproduce a paper by Fifield from Harvard et. al., *Automated Redistricting Simulation Using Markov Chain Monte Carlo*
+  
+  Since the 1970s, researchers and scholars have been trying to automate the Redistricting process by using algorithms, since this process is extremely complicated and it is also critical in order to provide a fair election process. Firstly researchers tried to approach it as an optimization problem, where they tried to find a redistricting plan that optimizes a pre-established set of specifications. This can be used to effectively draw the district lines, However, this fails to account for some of the criteria that were previously mentioned (Compactness, Contiguity, etc), since in essence redistricting is a problem that has a lot of geographical properties involved, and requires the researchers to characterize the population distribution in order to fully judge whether a redistricting plan is fair and also meets the required criteria.
+  
+  
+  Due to the nature of the Redistricting problem, a simulation method would be a lot more appropriate since it allows researchers to better characterize the underlying population distribution, by simulating redistricting plans under different assumptions and constraints. Yet, until recently only a few algorithms existed and those algorithms are all pretty similar in terms of the way they try to tackle the redistricting problem and use almost the same Monte Carlo method. According to Fifield et. al, the way this algorithm work is by selecting a random geographical unit as a seed for each district, and then contiguous units are attached until the pre-defined population threshold is satisfied.
+  
+  We choose to reproduce the paper from Fifield et. al, *Automated Redistricting Simulation Using Markov Chain Monte Carlo*. This paper implements the MCMC Redistricting Simulation in the state of Pennsylvania, where the goal of the paper is to reduce the partisan bias of redistricting plans to as close as possible to zero while also accounting for the equal population, compactness, and contiguity constraints. In our paper, we reproduce the algorithm in the state of Colorado, with the same goal of zero percent partisan bias. This algorithm uses a different method to simulate redistricting plans as it formulates the problem as a graph-cut problem.
+
 
 
 # Methodology
