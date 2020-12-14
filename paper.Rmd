@@ -17,21 +17,20 @@ knitr::opts_chunk$set(echo=FALSE)
 
 ## Introduction 
 
-  Fair elections are an integral part of democracy for, without it, the will of the people might not be respected and if that happens we no longer have a democracy. However, despite the huge importance of the elections in the US, there are still ways that a party can negatively impact the election by gaining an unfair advantage. One of the ways that this can happen, is gerrymandering were to gain a political advantage in a state by manipulating district boundaries. This issue has come before the supreme court, however, it was ruled that it was up to Congress and the states to deal with it.
+  Fair elections are an integral part of democracy for, without it, the will of the people might not be respected and if that happens we no longer have a democracy. However, despite the huge importance of the elections in the US, there are still ways that a party can negatively impact the election by gaining an unfair advantage. One of the ways that this can happen, is gerrymandering. This is the practice for unfairly obtaining a political advantage in a state by manipulating district boundaries. This issue has come before the supreme court, however, it was ruled that it was up to Congress and the states to deal with it.
   
-  Due to the scale of this issue, the paper by Fifield et al, proposes the use of a Markov Chain Monte Carlo method to automate the redistricting process, despite having a few Monte Carlo algorithms existing none of them have a strong theoretical background. Fifield et al algorithm proposes to solve the automation redistricting by formulating it as a Graph Cut problem, where the MCMC samples the districts plans from arbitrary distributions over the set of n contiguous districts, they also implemented equal population constraint, which is a main requirement in the real-world problem.
+  Due to the scale of this issue, the paper by Fifield et al, proposes the use of a Markov Chain Monte Carlo method to automate the redistricting process. Monte Carlo algorithms for redistricting have existed previously, but none of them have a strong theoretical background. Fifield et al algorithm proposes to solve the automation redistricting by formulating it as a Graph Cut problem, which allows the use of the Metropolis-Hastings algorthim to generate MCMC samples of districting plans from arbitrary distributions over the set of $n$ contiguous districts. They also implemented equal population constraint, which is a main requirement in the real-world problem.
 
 
 ## What is Redistricting?
- "In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (Wikipedia). Redistricting also has to follow 6 different criteria, which are as follows. 
-
-Redistricting criteria:
-    - compactness
-    - contiguity
-    - equal population
-    - preservation of existing political communities
-    - partisan fairness
-    - racial fairness
+ "In the United States is the process of drawing electoral district boundaries. A congressional act passed in 1967 requires that representatives be elected from single-member districts, except when a state has a single representative, in which case one state-wide at-large election be held." (Wikipedia). Redistricting also has to follow 6 different criteria.
+ 
+    - Compactness
+    - Contiguity
+    - Equal population
+    - Preservation of existing political communities
+    - Partisan fairness
+    - Racial fairness
  
   The compact criteria pertain to the size of each district where one district cannot be of enormous size and another one be really small, they all have to be more or less similar in size. The contiguity constraint stipulates that all of the districts have to be continuous in an area in the sense that one district cannot cut through the middle of the other one. The equal population constraint determines that the districts must divide the population of the state equally, which may seem simple at first, however, the implementation of this is quite complicated when the precinct's population are factored in since you have to account for each precinct population. 
 
@@ -77,7 +76,7 @@ The Metropolis-Hastings algorithm is a Monte Carlo Markov Chain algorithm based 
 
 
 ## Metropolis-Hastings Iteration Example
-To simulate redistricting, “perturbation” looks like swapping precincts along existing district borders. \ref{fig:MCMC example} illustrates the perturbation process for an example sample in a Metropolis-Hastings chain. Perturbation works by identifying nodes that exist on congressional district borders and proposing swaps along the borders. This produces a perturbation of the previous sample which is accepted with acceptance ratio
+To simulate redistricting, “perturbation” looks like swapping precincts along existing district borders. \ref{fig:mcmc-example} illustrates the perturbation process for an example sample in a Metropolis-Hastings chain. Perturbation works by identifying nodes that exist on congressional district borders and proposing swaps along the borders. This produces a perturbation of the previous sample which is accepted with acceptance ratio
 
 $$
 \alpha(\pi', \mathbf{CP} | \pi) = \min \Big(1,
@@ -90,7 +89,7 @@ $$
 where $\pi$ is the current sample, $\pi'$ is the perturbed sample, $\mathbf{CP}$ is the set of connected components formed by $\pi$, and $C$ is a graph-cut function.
 
 
-![MCMC example](figures/mcmc_example.png)
+![Metropolis-Hastings iteration example (Fifield et. al.) \label{mcmc-example}](figures/mcmc_example.png)
 
 
 ## `redist` Package
@@ -188,9 +187,21 @@ Here is the minimum bias map. This map shows the simulation with the political b
 
 Moving forward we would like to explore the compactness constraint to attempt to get a more realistic redistricted map of Colorado. Also bumping up the number of simulations could prove to be useful, our limit with the computers that we have is 10,000 runs getting that number up to 100,000 would be ideal. However being able to do those two things would require access to more powerful computers. Also, running this analysis on another state could be very interesting, Texas for example, a historically republican state, has shown a trend of democratic voting increase. It would be very interesting to look into how gerrymandering has been affecting Texas politics. 
 
+## Sources
 
+Fifield, Benjamin, et al. "Automated Redistricting Simulation Using Markov Chain Monte Carlo." *Journal of Computational and Graphical Statistics* (2020): 1-14.
 
+Altman, M. (1997). The computational complexity of automated redistricting: Is automation the answer. *Rutgers Computer & Tech. LJ*, 23, 81.
 
+[`redist` Manual](https://cran.r-project.org/web/packages/redist/redist.pdf)
+
+['sf' Manual](https://r-spatial.github.io/sf/)
+
+[MGGG Colorado Election Shapefile](https://github.com/mggg-states/CO-shapefiles)
+
+[Harvard Election Data Archive](https://projects.iq.harvard.edu/eda/pages/about)
+
+https://en.wikipedia.org/wiki/Gerrymandering
 
 
 
